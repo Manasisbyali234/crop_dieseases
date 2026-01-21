@@ -1,4 +1,5 @@
-opencv-python
-Pillow
-numpy
-pandas
+opencv-python>=4.5.0
+Pillow>=8.0.0
+numpy>=1.19.0
+pandas>=1.3.0
+tkinter-tooltip>=2.0.0
