@@ -25,51 +25,63 @@ class CropDiseaseDetector:
         
         # Professional color scheme
         self.colors = {
-            'primary': '#1e3a8a',
+            'primary': '#2563eb',
+            'primary_dark': '#1e40af',
             'secondary': '#64748b',
-            'accent': '#0ea5e9',
-            'success': '#059669',
-            'danger': '#dc2626',
-            'warning': '#d97706',
-            'light': '#f1f5f9',
+            'accent': '#06b6d4',
+            'accent_hover': '#0891b2',
+            'success': '#10b981',
+            'success_hover': '#059669',
+            'danger': '#ef4444',
+            'warning': '#f59e0b',
+            'warning_hover': '#d97706',
+            'light': '#f8fafc',
             'white': '#ffffff',
             'dark': '#0f172a',
             'muted': '#94a3b8',
             'card': '#ffffff',
-            'border': '#e2e8f0'
+            'border': '#e2e8f0',
+            'shadow': '#00000015'
         }
         
         self.setup_ui()
     
     def setup_ui(self):
-        # Header
-        header_frame = tk.Frame(self.root, bg=self.colors['primary'], height=80)
+        # Header with gradient effect
+        header_frame = tk.Frame(self.root, bg=self.colors['primary'], height=90)
         header_frame.pack(fill="x")
         header_frame.pack_propagate(False)
         
         title = tk.Label(header_frame, 
                         text="🌱 Crop Disease Detection System",
-                        font=("Arial", 24, "bold"),
+                        font=("Segoe UI", 26, "bold"),
                         bg=self.colors['primary'],
                         fg=self.colors['white'])
-        title.pack(expand=True)
+        title.pack(expand=True, pady=5)
+        
+        subtitle = tk.Label(header_frame,
+                           text="AI-Powered Plant Health Analysis",
+                           font=("Segoe UI", 10),
+                           bg=self.colors['primary'],
+                           fg="#93c5fd")
+        subtitle.pack()
         
         # Main container
         main_container = tk.Frame(self.root, bg=self.colors['light'])
-        main_container.pack(expand=True, fill="both", padx=20, pady=20)
+        main_container.pack(expand=True, fill="both", padx=25, pady=25)
         
-        # Left panel
-        left_panel = tk.Frame(main_container, bg=self.colors['card'], relief="solid", bd=1)
-        left_panel.pack(side="left", fill="both", expand=True, padx=(0, 10))
+        # Left panel with shadow effect
+        left_panel = tk.Frame(main_container, bg=self.colors['card'], relief="flat", bd=0, highlightthickness=1, highlightbackground=self.colors['border'])
+        left_panel.pack(side="left", fill="both", expand=True, padx=(0, 12))
         
         # Upload section
         upload_frame = tk.Frame(left_panel, bg=self.colors['card'])
-        upload_frame.pack(fill="x", padx=20, pady=20)
+        upload_frame.pack(fill="x", padx=25, pady=25)
         
         tk.Label(upload_frame, text="📁 File Upload", 
-                font=("Arial", 14, "bold"),
+                font=("Segoe UI", 15, "bold"),
                 bg=self.colors['card'],
-                fg=self.colors['primary']).pack(anchor="w", pady=(0, 10))
+                fg=self.colors['dark']).pack(anchor="w", pady=(0, 15))
         
         btn_frame = tk.Frame(upload_frame, bg=self.colors['card'])
         btn_frame.pack(fill="x")
@@ -77,130 +89,151 @@ class CropDiseaseDetector:
         self.upload_img_btn = tk.Button(btn_frame, 
                                        text="📷 Upload Image",
                                        command=self.upload_image,
-                                       font=("Arial", 10, "bold"),
+                                       font=("Segoe UI", 10, "bold"),
                                        bg=self.colors['accent'],
                                        fg=self.colors['white'],
                                        relief="flat",
-                                       padx=20, pady=10,
-                                       cursor="hand2")
-        self.upload_img_btn.pack(side="left", padx=(0, 10))
+                                       padx=25, pady=12,
+                                       cursor="hand2",
+                                       activebackground=self.colors['accent_hover'],
+                                       activeforeground=self.colors['white'])
+        self.upload_img_btn.pack(side="left", padx=(0, 12))
+        self.upload_img_btn.bind("<Enter>", lambda e: self.upload_img_btn.config(bg=self.colors['accent_hover']))
+        self.upload_img_btn.bind("<Leave>", lambda e: self.upload_img_btn.config(bg=self.colors['accent']))
         
         self.upload_csv_btn = tk.Button(btn_frame,
                                        text="📊 Upload CSV",
                                        command=self.upload_csv,
-                                       font=("Arial", 10, "bold"),
+                                       font=("Segoe UI", 10, "bold"),
                                        bg=self.colors['warning'],
                                        fg=self.colors['white'],
                                        relief="flat",
-                                       padx=20, pady=10,
-                                       cursor="hand2")
+                                       padx=25, pady=12,
+                                       cursor="hand2",
+                                       activebackground=self.colors['warning_hover'],
+                                       activeforeground=self.colors['white'])
         self.upload_csv_btn.pack(side="left")
+        self.upload_csv_btn.bind("<Enter>", lambda e: self.upload_csv_btn.config(bg=self.colors['warning_hover']))
+        self.upload_csv_btn.bind("<Leave>", lambda e: self.upload_csv_btn.config(bg=self.colors['warning']))
         
         # Preview section
         preview_frame = tk.Frame(left_panel, bg=self.colors['card'])
-        preview_frame.pack(fill="both", expand=True, padx=20, pady=(10, 20))
+        preview_frame.pack(fill="both", expand=True, padx=25, pady=(15, 25))
         
         tk.Label(preview_frame, text="🖼️ Preview", 
-                font=("Arial", 14, "bold"),
+                font=("Segoe UI", 15, "bold"),
                 bg=self.colors['card'],
-                fg=self.colors['primary']).pack(anchor="w", pady=(0, 10))
+                fg=self.colors['dark']).pack(anchor="w", pady=(0, 15))
         
-        # Display area
+        # Display area with rounded effect
         self.display_frame = tk.Frame(preview_frame, bg=self.colors['light'],
-                                     relief="solid", bd=1)
+                                     relief="flat", bd=0, highlightthickness=2, highlightbackground=self.colors['border'])
         self.display_frame.pack(fill="both", expand=True)
         
         self.display_label = tk.Label(self.display_frame,
                                      text="📷 📊\n\nNo file selected\n\nUpload an image or CSV file to begin",
                                      bg=self.colors['light'],
-                                     font=("Arial", 12),
+                                     font=("Segoe UI", 11),
                                      fg=self.colors['muted'],
                                      justify="center")
         self.display_label.pack(expand=True)
         
-        # Right panel
+        # Right panel with shadow
         right_panel = tk.Frame(main_container, bg=self.colors['card'],
-                              relief="solid", bd=1, width=400)
+                              relief="flat", bd=0, width=420, highlightthickness=1, highlightbackground=self.colors['border'])
         right_panel.pack(side="right", fill="y")
         right_panel.pack_propagate(False)
         
         # Analysis section
         analysis_frame = tk.Frame(right_panel, bg=self.colors['card'])
-        analysis_frame.pack(fill="x", padx=20, pady=20)
+        analysis_frame.pack(fill="x", padx=25, pady=25)
         
         tk.Label(analysis_frame, text="🔬 Disease Analysis", 
-                font=("Arial", 14, "bold"),
+                font=("Segoe UI", 15, "bold"),
                 bg=self.colors['card'],
-                fg=self.colors['primary']).pack(anchor="w", pady=(0, 15))
+                fg=self.colors['dark']).pack(anchor="w", pady=(0, 18))
         
         self.detect_btn = tk.Button(analysis_frame,
                                    text="🔍 Start Analysis",
                                    command=self.detect_disease,
-                                   font=("Arial", 12, "bold"),
+                                   font=("Segoe UI", 12, "bold"),
                                    bg=self.colors['success'],
                                    fg=self.colors['white'],
                                    relief="flat",
-                                   padx=30, pady=12,
+                                   padx=35, pady=14,
                                    cursor="hand2",
-                                   state="disabled")
+                                   state="disabled",
+                                   disabledforeground="#d1d5db",
+                                   activebackground=self.colors['success_hover'],
+                                   activeforeground=self.colors['white'])
         self.detect_btn.pack(fill="x")
+        self.detect_btn.bind("<Enter>", lambda e: self.detect_btn.config(bg=self.colors['success_hover']) if self.detect_btn['state'] == 'normal' else None)
+        self.detect_btn.bind("<Leave>", lambda e: self.detect_btn.config(bg=self.colors['success']) if self.detect_btn['state'] == 'normal' else None)
         
         # Results section
         results_frame = tk.Frame(right_panel, bg=self.colors['card'])
-        results_frame.pack(fill="both", expand=True, padx=20, pady=(10, 20))
+        results_frame.pack(fill="both", expand=True, padx=25, pady=(15, 25))
         
         tk.Label(results_frame, text="📊 Results", 
-                font=("Arial", 14, "bold"),
+                font=("Segoe UI", 15, "bold"),
                 bg=self.colors['card'],
-                fg=self.colors['primary']).pack(anchor="w", pady=(0, 15))
+                fg=self.colors['dark']).pack(anchor="w", pady=(0, 18))
         
-        # Disease result
-        disease_frame = tk.Frame(results_frame, bg=self.colors['light'], relief="solid", bd=1)
-        disease_frame.pack(fill="x", pady=(0, 10))
+        # Disease result card
+        disease_frame = tk.Frame(results_frame, bg=self.colors['light'], relief="flat", bd=0, highlightthickness=1, highlightbackground=self.colors['border'])
+        disease_frame.pack(fill="x", pady=(0, 12))
         
-        tk.Label(disease_frame, text="🦠 Disease:", 
-                font=("Arial", 10, "bold"),
-                bg=self.colors['light']).pack(anchor="w", padx=10, pady=(5, 0))
+        tk.Label(disease_frame, text="🦠 Disease", 
+                font=("Segoe UI", 9, "bold"),
+                bg=self.colors['light'],
+                fg=self.colors['secondary']).pack(anchor="w", padx=15, pady=(10, 2))
         
         self.disease_label = tk.Label(disease_frame, text="Awaiting analysis...",
-                                     font=("Arial", 12, "bold"),
+                                     font=("Segoe UI", 13, "bold"),
                                      bg=self.colors['light'],
                                      fg=self.colors['muted'])
-        self.disease_label.pack(anchor="w", padx=10, pady=(0, 5))
+        self.disease_label.pack(anchor="w", padx=15, pady=(0, 10))
         
-        # Confidence result
-        confidence_frame = tk.Frame(results_frame, bg=self.colors['light'], relief="solid", bd=1)
-        confidence_frame.pack(fill="x", pady=(0, 10))
+        # Confidence result card
+        confidence_frame = tk.Frame(results_frame, bg=self.colors['light'], relief="flat", bd=0, highlightthickness=1, highlightbackground=self.colors['border'])
+        confidence_frame.pack(fill="x", pady=(0, 12))
         
-        tk.Label(confidence_frame, text="📈 Confidence:", 
-                font=("Arial", 10, "bold"),
-                bg=self.colors['light']).pack(anchor="w", padx=10, pady=(5, 0))
+        tk.Label(confidence_frame, text="📈 Confidence Level", 
+                font=("Segoe UI", 9, "bold"),
+                bg=self.colors['light'],
+                fg=self.colors['secondary']).pack(anchor="w", padx=15, pady=(10, 2))
         
         self.confidence_label = tk.Label(confidence_frame, text="0%",
-                                        font=("Arial", 12, "bold"),
+                                        font=("Segoe UI", 13, "bold"),
                                         bg=self.colors['light'],
                                         fg=self.colors['muted'])
-        self.confidence_label.pack(anchor="w", padx=10, pady=(0, 5))
+        self.confidence_label.pack(anchor="w", padx=15, pady=(0, 10))
         
-        # Treatment recommendations
-        remedy_frame = tk.Frame(results_frame, bg=self.colors['light'], relief="solid", bd=1)
+        # Treatment recommendations card
+        remedy_frame = tk.Frame(results_frame, bg=self.colors['light'], relief="flat", bd=0, highlightthickness=1, highlightbackground=self.colors['border'])
         remedy_frame.pack(fill="both", expand=True)
         
-        tk.Label(remedy_frame, text="💊 Treatment:", 
-                font=("Arial", 10, "bold"),
-                bg=self.colors['light']).pack(anchor="w", padx=10, pady=(5, 5))
+        tk.Label(remedy_frame, text="💊 Treatment Recommendations", 
+                font=("Segoe UI", 9, "bold"),
+                bg=self.colors['light'],
+                fg=self.colors['secondary']).pack(anchor="w", padx=15, pady=(10, 8))
         
-        self.remedy_text = tk.Text(remedy_frame,
+        text_container = tk.Frame(remedy_frame, bg=self.colors['light'])
+        text_container.pack(fill="both", expand=True, padx=15, pady=(0, 10))
+        
+        self.remedy_text = tk.Text(text_container,
                                   height=8,
                                   wrap="word",
-                                  font=("Arial", 9),
-                                  bg=self.colors['light'],
+                                  font=("Segoe UI", 9),
+                                  bg=self.colors['white'],
                                   relief="flat",
                                   bd=0,
-                                  padx=10,
-                                  pady=5)
+                                  padx=12,
+                                  pady=10,
+                                  highlightthickness=1,
+                                  highlightbackground=self.colors['border'])
         
-        scrollbar = tk.Scrollbar(remedy_frame, orient="vertical", command=self.remedy_text.yview)
+        scrollbar = tk.Scrollbar(text_container, orient="vertical", command=self.remedy_text.yview)
         self.remedy_text.configure(yscrollcommand=scrollbar.set)
         
         self.remedy_text.pack(side="left", fill="both", expand=True)
@@ -276,10 +309,10 @@ class CropDiseaseDetector:
             
             filename = os.path.basename(self.image_path)
             info_label = tk.Label(self.display_frame, text=f"📷 {filename}",
-                                 font=("Arial", 9),
+                                 font=("Segoe UI", 9),
                                  bg=self.colors['light'],
-                                 fg=self.colors['muted'])
-            info_label.pack(pady=5)
+                                 fg=self.colors['secondary'])
+            info_label.pack(pady=8)
             
         except Exception as e:
             messagebox.showerror("Error", f"Failed to display image: {str(e)}")
@@ -296,14 +329,14 @@ class CropDiseaseDetector:
             info_frame.pack(expand=True)
             
             tk.Label(info_frame, text=f"📊 {filename}",
-                    font=("Arial", 12, "bold"),
+                    font=("Segoe UI", 13, "bold"),
                     bg=self.colors['light'],
-                    fg=self.colors['primary']).pack(pady=10)
+                    fg=self.colors['dark']).pack(pady=12)
             
             tk.Label(info_frame, text=f"📈 {rows:,} rows, {cols} columns",
-                    font=("Arial", 10),
+                    font=("Segoe UI", 10),
                     bg=self.colors['light'],
-                    fg=self.colors['secondary']).pack()
+                    fg=self.colors['secondary']).pack(pady=5)
             
             # Show first few columns
             columns_text = "Columns: " + ", ".join(self.csv_data.columns[:5].tolist())
@@ -311,10 +344,10 @@ class CropDiseaseDetector:
                 columns_text += f"... (+{len(self.csv_data.columns)-5} more)"
             
             tk.Label(info_frame, text=columns_text,
-                    font=("Arial", 9),
+                    font=("Segoe UI", 9),
                     bg=self.colors['light'],
                     fg=self.colors['muted'],
-                    wraplength=350).pack(pady=10)
+                    wraplength=350).pack(pady=12)
             
         except Exception as e:
             messagebox.showerror("Error", f"Failed to display CSV: {str(e)}")
@@ -358,37 +391,57 @@ class CropDiseaseDetector:
             messagebox.showerror("Error", f"Analysis failed: {str(e)}")
     
     def display_results(self, disease_name, confidence, remedy):
-        # Update labels
-        self.disease_label.config(text=disease_name, font=("Arial", 12, "bold"))
-        self.confidence_label.config(text=f"{confidence}%", font=("Arial", 12, "bold"))
-        
-        # Set colors based on disease
+        # Check if crop is healthy
         if disease_name == "Healthy":
-            color = self.colors['success']
-        elif confidence >= 80:
-            color = self.colors['danger']
+            self.disease_label.config(text="✅ No Disease Detected", font=("Segoe UI", 13, "bold"), fg=self.colors['success'])
+            self.confidence_label.config(text=f"{confidence}%", font=("Segoe UI", 13, "bold"), fg=self.colors['success'])
+            
+            # Update remedy text for healthy crop
+            self.remedy_text.config(state="normal")
+            self.remedy_text.delete(1.0, tk.END)
+            
+            formatted_remedy = f"✅ ANALYSIS COMPLETE\n\n"
+            formatted_remedy += f"Status: Healthy Crop\n"
+            formatted_remedy += f"Confidence: {confidence}%\n\n"
+            formatted_remedy += "RECOMMENDATION:\n"
+            formatted_remedy += "─" * 30 + "\n"
+            formatted_remedy += remedy
+            
+            self.remedy_text.insert(1.0, formatted_remedy)
+            self.remedy_text.config(state="disabled")
+            
+            messagebox.showinfo("Analysis Complete", 
+                               f"✅ No Disease Detected\nConfidence: {confidence}%\n\nYour crop appears healthy!")
         else:
-            color = self.colors['warning']
-        
-        self.disease_label.config(fg=color)
-        self.confidence_label.config(fg=color)
-        
-        # Update remedy text
-        self.remedy_text.config(state="normal")
-        self.remedy_text.delete(1.0, tk.END)
-        
-        formatted_remedy = f"🎯 ANALYSIS COMPLETE\n\n"
-        formatted_remedy += f"Disease: {disease_name}\n"
-        formatted_remedy += f"Confidence: {confidence}%\n\n"
-        formatted_remedy += "TREATMENT:\n"
-        formatted_remedy += "─" * 30 + "\n"
-        formatted_remedy += remedy
-        
-        self.remedy_text.insert(1.0, formatted_remedy)
-        self.remedy_text.config(state="disabled")
-        
-        messagebox.showinfo("Analysis Complete", 
-                           f"Disease: {disease_name}\nConfidence: {confidence}%\n\nCheck results panel for treatment details.")
+            # Disease detected
+            self.disease_label.config(text=f"⚠️ {disease_name}", font=("Segoe UI", 13, "bold"))
+            self.confidence_label.config(text=f"{confidence}%", font=("Segoe UI", 13, "bold"))
+            
+            # Set colors based on confidence
+            if confidence >= 80:
+                color = self.colors['danger']
+            else:
+                color = self.colors['warning']
+            
+            self.disease_label.config(fg=color)
+            self.confidence_label.config(fg=color)
+            
+            # Update remedy text
+            self.remedy_text.config(state="normal")
+            self.remedy_text.delete(1.0, tk.END)
+            
+            formatted_remedy = f"⚠️ DISEASE DETECTED\n\n"
+            formatted_remedy += f"Disease: {disease_name}\n"
+            formatted_remedy += f"Confidence: {confidence}%\n\n"
+            formatted_remedy += "TREATMENT:\n"
+            formatted_remedy += "─" * 30 + "\n"
+            formatted_remedy += remedy
+            
+            self.remedy_text.insert(1.0, formatted_remedy)
+            self.remedy_text.config(state="disabled")
+            
+            messagebox.showinfo("Disease Detected", 
+                               f"⚠️ Disease: {disease_name}\nConfidence: {confidence}%\n\nCheck results panel for treatment details.")
     
     def reset_results(self):
         self.disease_label.config(text="Awaiting analysis...", fg=self.colors['muted'])
