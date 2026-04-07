@@ -6,23 +6,100 @@ from PIL import Image, ImageDraw
 
 class DiseaseDetector:
     def __init__(self):
-        # Dummy disease data
         self.diseases = {
             "Healthy": {
                 "confidence": random.randint(85, 95),
-                "remedy": "Your crop appears healthy! Continue regular care and monitoring."
+                "remedy": (
+                    "Your crop is healthy - no disease detected.\n\n"
+                    "DESCRIPTION:\n"
+                    "The plant shows normal green coloration with no visible spots, lesions, or discoloration.\n\n"
+                    "PREVENTIVE CARE:\n"
+                    "  - Water at the base; avoid wetting foliage.\n"
+                    "  - Maintain proper plant spacing for airflow.\n"
+                    "  - Apply balanced NPK fertilizer every 3-4 weeks.\n"
+                    "  - Inspect leaves weekly for early signs of disease.\n"
+                    "  - Remove dead or yellowing leaves promptly.\n\n"
+                    "MONITORING TIP:\n"
+                    "Re-scan after rainfall or high-humidity periods to catch early infections."
+                )
             },
             "Leaf Blight": {
                 "confidence": random.randint(75, 90),
-                "remedy": "Apply copper-based fungicide. Remove affected leaves and improve air circulation."
+                "remedy": (
+                    "DISEASE: Leaf Blight\n\n"
+                    "DESCRIPTION:\n"
+                    "Fungal/bacterial infection causing water-soaked, dark brown or black irregular "
+                    "spots on leaves. Affected tissue dies and leaves may curl or drop.\n\n"
+                    "CAUSES:\n"
+                    "  - Fungi: Alternaria, Helminthosporium species\n"
+                    "  - Bacteria: Xanthomonas, Pseudomonas species\n"
+                    "  - Favored by warm, wet, and humid conditions\n\n"
+                    "TREATMENT STEPS:\n"
+                    "  1. Remove & destroy all visibly infected leaves immediately.\n"
+                    "  2. Spray copper-based fungicide (Copper Oxychloride 50% WP) -\n"
+                    "     mix 3g per litre of water; apply every 7-10 days.\n"
+                    "  3. For bacterial blight, use Streptomycin Sulphate (0.1%) spray.\n"
+                    "  4. Improve air circulation by pruning dense foliage.\n"
+                    "  5. Avoid overhead irrigation; use drip irrigation instead.\n"
+                    "  6. Apply Mancozeb 75% WP (2.5g/litre) as a protective spray.\n\n"
+                    "PREVENTION:\n"
+                    "  - Use certified disease-free seeds.\n"
+                    "  - Rotate crops every season.\n"
+                    "  - Avoid working in fields when plants are wet.\n\n"
+                    "EXPECTED RECOVERY: 2-3 weeks with consistent treatment."
+                )
             },
             "Powdery Mildew": {
                 "confidence": random.randint(80, 92),
-                "remedy": "Use sulfur-based fungicide. Reduce humidity and increase spacing between plants."
+                "remedy": (
+                    "DISEASE: Powdery Mildew\n\n"
+                    "DESCRIPTION:\n"
+                    "White or grayish powdery patches on leaf surfaces, stems, and buds. "
+                    "Severely infected leaves turn yellow and drop prematurely.\n\n"
+                    "CAUSES:\n"
+                    "  - Fungi: Erysiphe, Podosphaera, Sphaerotheca species\n"
+                    "  - Thrives in dry weather with high humidity at night\n"
+                    "  - Spreads rapidly via airborne spores\n\n"
+                    "TREATMENT STEPS:\n"
+                    "  1. Remove heavily infected plant parts and dispose away from the field.\n"
+                    "  2. Spray Wettable Sulfur (80% WP) at 2-3g per litre every 7 days.\n"
+                    "  3. Apply Triadimefon (25% WP) or Hexaconazole (5% EC) for severe infections.\n"
+                    "  4. Organic option: 1 tsp baking soda + 1 tsp neem oil per litre of water.\n"
+                    "  5. Increase plant spacing to reduce humidity around foliage.\n"
+                    "  6. Avoid excess nitrogen fertilization.\n\n"
+                    "PREVENTION:\n"
+                    "  - Choose mildew-resistant crop varieties.\n"
+                    "  - Ensure good sunlight exposure to all plant parts.\n"
+                    "  - Apply preventive neem oil spray every 2 weeks.\n\n"
+                    "EXPECTED RECOVERY: 1-2 weeks with sulfur-based treatment."
+                )
             },
             "Rust Disease": {
                 "confidence": random.randint(78, 88),
-                "remedy": "Apply rust-resistant fungicide. Remove infected plant debris and avoid overhead watering."
+                "remedy": (
+                    "DISEASE: Rust Disease\n\n"
+                    "DESCRIPTION:\n"
+                    "Orange, yellow, or reddish-brown pustules (raised spots) on the underside of "
+                    "leaves. Upper surface shows yellow or pale green flecks. Severe infection leads "
+                    "to leaf death and significant yield loss.\n\n"
+                    "CAUSES:\n"
+                    "  - Fungi: Puccinia, Uromyces, Phakopsora species\n"
+                    "  - Spreads through wind-blown spores\n"
+                    "  - Favored by cool nights, warm days, and leaf wetness\n\n"
+                    "TREATMENT STEPS:\n"
+                    "  1. Remove and burn all infected leaves and plant debris immediately.\n"
+                    "  2. Spray Propiconazole (25% EC) at 1ml per litre of water.\n"
+                    "  3. Apply Mancozeb 75% WP (2.5g/litre) every 10 days as protection.\n"
+                    "  4. Use Tebuconazole (25.9% EC) for systemic control of severe rust.\n"
+                    "  5. Avoid overhead watering; water early morning so leaves dry quickly.\n"
+                    "  6. Do not compost infected material - burn or bury it deep.\n\n"
+                    "PREVENTION:\n"
+                    "  - Plant rust-resistant varieties when available.\n"
+                    "  - Maintain field hygiene - remove crop residues after harvest.\n"
+                    "  - Apply preventive fungicide spray at start of growing season.\n"
+                    "  - Monitor fields regularly, especially after rainy periods.\n\n"
+                    "EXPECTED RECOVERY: 2-4 weeks with systemic fungicide treatment."
+                )
             }
         }
     
@@ -230,47 +307,41 @@ class DiseaseDetector:
         
         return disease_name, confidence, remedy, marked_image
     
+    def _predict_row(self, row, disease_indicators):
+        has_disease = False
+        if disease_indicators:
+            for col in disease_indicators:
+                val = row.get(col)
+                try:
+                    if float(val) > 0:
+                        has_disease = True
+                        break
+                except (TypeError, ValueError):
+                    if str(val).strip().lower() not in ('', 'none', 'nan', '0', 'no', 'false', 'healthy'):
+                        has_disease = True
+                        break
+        if has_disease:
+            disease_name = random.choice(["Leaf Blight", "Powdery Mildew", "Rust Disease"])
+            confidence = random.randint(72, 90)
+        else:
+            disease_name = "Healthy"
+            confidence = random.randint(85, 95)
+        return disease_name, confidence, self.diseases[disease_name]["remedy"]
+
     def analyze_csv(self, csv_data):
-        """Analyze CSV data and return disease prediction based on data patterns"""
         try:
-            rows, cols = csv_data.shape
-            
-            # Look for disease-related columns
-            disease_indicators = []
-            for col in csv_data.columns:
-                col_lower = str(col).lower()
-                if any(keyword in col_lower for keyword in ['disease', 'infected', 'symptom', 'damage', 'severity']):
-                    disease_indicators.append(col)
-            
-            # If disease indicators found, analyze them
-            if disease_indicators:
-                # Check if data suggests disease presence
-                has_disease = False
-                for col in disease_indicators:
-                    if csv_data[col].dtype in ['int64', 'float64']:
-                        # If numeric values are high, might indicate disease
-                        if csv_data[col].mean() > csv_data[col].median():
-                            has_disease = True
-                            break
-                
-                if has_disease:
-                    # Determine which disease based on data patterns
-                    diseases = ["Leaf Blight", "Powdery Mildew", "Rust Disease"]
-                    disease_name = random.choice(diseases)
-                    confidence = min(90, 70 + random.randint(5, 15))
-                else:
-                    disease_name = "Healthy"
-                    confidence = random.randint(85, 93)
-            else:
-                # No clear disease indicators - assume healthy
-                disease_name = "Healthy"
-                confidence = random.randint(82, 92)
-            
-            # Get remedy
-            remedy = self.diseases[disease_name]["remedy"]
-            csv_remedy = f"Based on {rows} data points with {cols} features: {remedy}"
-            
-            return disease_name, confidence, csv_remedy
-            
+            from collections import Counter
+            disease_indicators = [
+                col for col in csv_data.columns
+                if any(k in str(col).lower() for k in ['disease', 'infected', 'symptom', 'damage', 'severity'])
+            ]
+            results = []
+            for _, row in csv_data.iterrows():
+                disease, conf, remedy = self._predict_row(row.to_dict(), disease_indicators)
+                results.append({"disease": disease, "confidence": conf, "remedy": remedy})
+            top_disease = Counter(r["disease"] for r in results).most_common(1)[0][0]
+            avg_conf = int(sum(r["confidence"] for r in results) / len(results))
+            summary = f"Analysed {len(results)} rows. Most common: {top_disease}.\n\n{self.diseases[top_disease]['remedy']}"
+            return top_disease, avg_conf, summary, results
         except Exception as e:
             raise Exception(f"CSV analysis failed: {str(e)}")
