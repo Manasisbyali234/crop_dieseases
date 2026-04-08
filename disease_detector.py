@@ -291,20 +291,25 @@ class DiseaseDetector:
             print(f"Error marking disease areas: {str(e)}")
             return Image.open(image_path)
     
+    def is_crop_image(self, image_path):
+        """Check if image contains crop/plant by detecting green vegetation."""
+        img = cv2.imread(image_path)
+        if img is None:
+            return False
+        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        green_mask = cv2.inRange(hsv, np.array([25, 30, 30]), np.array([95, 255, 255]))
+        green_ratio = np.sum(green_mask > 0) / green_mask.size
+        return green_ratio > 0.05
+
     def analyze_image(self, image_path):
         """Analyze image and return disease prediction"""
-        # Process image
+        if not self.is_crop_image(image_path):
+            raise ValueError("Not a crop image. Please upload an image of a crop or plant leaf.")
+
         processed_image = self.process_image(image_path)
-        
-        # Use feature-based prediction
         disease_name, confidence = self.analyze_image_features(image_path)
-        
-        # Get remedy from disease data
         remedy = self.diseases[disease_name]["remedy"]
-        
-        # Mark disease areas on image
         marked_image = self.mark_disease_areas(image_path, disease_name)
-        
         return disease_name, confidence, remedy, marked_image
     
     def _predict_row(self, row, disease_indicators):
