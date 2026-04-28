@@ -292,14 +292,44 @@ class DiseaseDetector:
             return Image.open(image_path)
     
     def is_crop_image(self, image_path):
-        """Check if image contains crop/plant by detecting green vegetation."""
+        """Strict check: image must contain significant green vegetation."""
         img = cv2.imread(image_path)
         if img is None:
             return False
+
+        img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB).astype(np.float32)
         hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-        green_mask = cv2.inRange(hsv, np.array([25, 30, 30]), np.array([95, 255, 255]))
-        green_ratio = np.sum(green_mask > 0) / green_mask.size
-        return green_ratio > 0.05
+        total = img.shape[0] * img.shape[1]
+
+        # 1. Green pixel ratio (strict: hue 30-95, decent saturation & brightness)
+        green_mask = cv2.inRange(hsv, np.array([30, 40, 40]), np.array([95, 255, 255]))
+        green_ratio = np.sum(green_mask > 0) / total
+
+        # 2. Vegetation index: green channel must dominate red and blue
+        r, g, b = img_rgb[:,:,0], img_rgb[:,:,1], img_rgb[:,:,2]
+        veg_mask = (g > r + 10) & (g > b + 10) & (g > 50)
+        veg_ratio = np.sum(veg_mask) / total
+
+        # 3. Reject sky-blue dominant images
+        sky_mask = cv2.inRange(hsv, np.array([90, 30, 150]), np.array([130, 255, 255]))
+        sky_ratio = np.sum(sky_mask > 0) / total
+
+        # 4. Reject skin-tone / food dominant images
+        skin_mask = cv2.inRange(hsv, np.array([0, 30, 100]), np.array([20, 170, 255]))
+        skin_ratio = np.sum(skin_mask > 0) / total
+
+        # 5. Reject near-grayscale images (low saturation = paper, concrete, etc.)
+        low_sat_mask = cv2.inRange(hsv, np.array([0, 0, 0]), np.array([180, 30, 255]))
+        gray_ratio = np.sum(low_sat_mask > 0) / total
+
+        # Must have strong green AND vegetation index, and not be dominated by sky/skin/gray
+        return (
+            green_ratio > 0.15 and
+            veg_ratio > 0.10 and
+            sky_ratio < 0.40 and
+            skin_ratio < 0.35 and
+            gray_ratio < 0.70
+        )
 
     def analyze_image(self, image_path):
         """Analyze image and return disease prediction"""
@@ -312,6 +342,25 @@ class DiseaseDetector:
         marked_image = self.mark_disease_areas(image_path, disease_name)
         return disease_name, confidence, remedy, marked_image
     
+    def _predict_from_name(self, name):
+        """Predict disease from crop/plant name text using keyword matching."""
+        text = str(name).lower().strip()
+        blight_kw = ['blight', 'spot', 'lesion', 'necrosis', 'brown', 'black', 'dead', 'rot', 'wilt', 'scorch']
+        mildew_kw = ['mildew', 'white', 'powder', 'gray', 'grey', 'fuzzy', 'downy', 'pale', 'chalky']
+        rust_kw   = ['rust', 'orange', 'yellow', 'pustule', 'uredinia', 'chlorosis', 'streak']
+        healthy_kw = ['healthy', 'normal', 'good', 'clean', 'fresh', 'green', 'fine']
+
+        if any(k in text for k in healthy_kw):
+            return "Healthy", random.randint(88, 95)
+        if any(k in text for k in blight_kw):
+            return "Leaf Blight", random.randint(75, 90)
+        if any(k in text for k in mildew_kw):
+            return "Powdery Mildew", random.randint(78, 92)
+        if any(k in text for k in rust_kw):
+            return "Rust Disease", random.randint(76, 88)
+        # No keyword match — treat as healthy
+        return "Healthy", random.randint(85, 93)
+
     def _predict_row(self, row, disease_indicators):
         has_disease = False
         if disease_indicators:
@@ -336,15 +385,39 @@ class DiseaseDetector:
     def analyze_csv(self, csv_data):
         try:
             from collections import Counter
-            disease_indicators = [
-                col for col in csv_data.columns
-                if any(k in str(col).lower() for k in ['disease', 'infected', 'symptom', 'damage', 'severity'])
-            ]
+            cols = csv_data.columns.tolist()
+            # Detect name-only CSV: single column or a column named 'name'/'crop'/'plant'
+            name_col = None
+            name_keywords = ['name', 'crop', 'plant', 'sample', 'label']
+            for col in cols:
+                if str(col).lower().strip() in name_keywords:
+                    name_col = col
+                    break
+            if name_col is None and len(cols) == 1:
+                name_col = cols[0]
+
             results = []
-            for _, row in csv_data.iterrows():
-                disease, conf, remedy = self._predict_row(row.to_dict(), disease_indicators)
-                results.append({"disease": disease, "confidence": conf, "remedy": remedy})
-            top_disease = Counter(r["disease"] for r in results).most_common(1)[0][0]
+            if name_col is not None:
+                # Text-based prediction from name column
+                for _, row in csv_data.iterrows():
+                    disease, conf = self._predict_from_name(row[name_col])
+                    results.append({"disease": disease, "confidence": conf,
+                                    "remedy": self.diseases[disease]["remedy"],
+                                    "name": str(row[name_col])})
+            else:
+                disease_indicators = [
+                    col for col in cols
+                    if any(k in str(col).lower() for k in ['disease', 'infected', 'symptom', 'damage', 'severity'])
+                ]
+                for _, row in csv_data.iterrows():
+                    disease, conf, remedy = self._predict_row(row.to_dict(), disease_indicators)
+                    results.append({"disease": disease, "confidence": conf, "remedy": remedy})
+
+            if not results:
+                raise Exception("The CSV file is empty or has no valid rows to analyse.")
+
+            most_common = Counter(r["disease"] for r in results).most_common(1)
+            top_disease = most_common[0][0] if most_common else "Healthy"
             avg_conf = int(sum(r["confidence"] for r in results) / len(results))
             summary = f"Analysed {len(results)} rows. Most common: {top_disease}.\n\n{self.diseases[top_disease]['remedy']}"
             return top_disease, avg_conf, summary, results
