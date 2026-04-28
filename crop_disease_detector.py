@@ -7,30 +7,34 @@ import threading
 from disease_detector import DiseaseDetector
 
 C = {
-    'bg':           '#f1f5f9',    # slate-100
-    'surface':      '#ffffff',    # white
-    'card':         '#ffffff',    # white
-    'card_inner':   '#f8fafc',    # slate-50
-    'border':       '#cbd5e1',    # slate-300
-    'border_glow':  '#10b98133',
-    'primary':      '#059669',    # emerald-600
-    'primary_h':    '#10b981',    # emerald-500
-    'primary_dim':  '#d1fae5',    # emerald-100
-    'success':      '#059669',
-    'success_h':    '#10b981',
-    'warning':      '#d97706',    # amber-600
-    'warning_h':    '#f59e0b',    # amber-500
-    'danger':       '#e11d48',    # rose-600
-    'danger_dim':   '#ffe4e6',    # rose-100
-    'accent':       '#4f46e5',    # indigo-600
-    'accent_h':     '#6366f1',    # indigo-500
-    'accent_dim':   '#e0e7ff',    # indigo-100
-    'text':         '#0f172a',    # slate-900
-    'text_muted':   '#475569',    # slate-600
-    'text_dim':     '#94a3b8',    # slate-400
+    'bg':           '#f4f5f7',    # cool grey-100
+    'surface':      '#ffffff',
+    'card':         '#ffffff',
+    'card_inner':   '#f9fafb',    # grey-50
+    'border':       '#e2e4e9',    # grey-200
+    'border_glow':  '#1a1a2e22',
+    'primary':      '#1e3a5f',    # deep navy — main action (Analyse)
+    'primary_h':    '#254d7a',
+    'primary_dim':  '#e8eef5',
+    'success':      '#1e3a5f',
+    'success_h':    '#254d7a',
+    'warning':      '#4a4a4a',    # charcoal — secondary actions
+    'warning_h':    '#333333',
+    'danger':       '#4a4a4a',
+    'danger_dim':   '#f0f0f0',
+    'accent':       '#4a4a4a',    # charcoal — upload buttons
+    'accent_h':     '#333333',
+    'accent_dim':   '#f0f0f0',
+    'text':         '#111318',    # near-black
+    'text_muted':   '#4b5060',    # grey-600
+    'text_dim':     '#9ea3b0',    # grey-400
     'white':        '#ffffff',
     'header_top':   '#ffffff',
-    'header_bot':   '#f1f5f9',
+    'header_bot':   '#f4f5f7',
+    # semantic — used only for status text/icons, not backgrounds
+    'ok':           '#2e7d32',    # muted green
+    'warn':         '#7a5c00',    # muted amber
+    'err':          '#b71c1c',    # muted red
 }
 
 FONT = "Segoe UI"
@@ -96,18 +100,18 @@ class CropDiseaseDetector:
         # Icon + brand
         brand_row = tk.Frame(left_grp, bg=C['header_top'])
         brand_row.pack(side="left", fill="y")
-        tk.Label(brand_row, text="🌿", font=(FONT, 22), bg=C['header_top']).pack(side="left", padx=(0, 10))
-        tk.Label(brand_row, text="CropGuard", font=(FONT, 20, "bold"),
+        tk.Label(brand_row, text="🌿", font=(FONT, 18), bg=C['header_top']).pack(side="left", padx=(0, 10))
+        tk.Label(brand_row, text="CropGuard", font=(FONT, 18, "bold"),
                  bg=C['header_top'], fg=C['text']).pack(side="left")
-        tk.Label(brand_row, text=" AI", font=(FONT, 20, "bold"),
-                 bg=C['header_top'], fg=C['primary']).pack(side="left")
+        tk.Label(brand_row, text=" AI", font=(FONT, 18, "bold"),
+                 bg=C['header_top'], fg=C['text_muted']).pack(side="left")
 
         # Version pill badge
-        badge = tk.Frame(brand_row, bg=C['primary_dim'],
-                         highlightthickness=1, highlightbackground=C['primary'])
+        badge = tk.Frame(brand_row, bg=C['card_inner'],
+                         highlightthickness=1, highlightbackground=C['border'])
         badge.pack(side="left", padx=(12, 0))
-        tk.Label(badge, text="v2.0", font=(FONT, 7, "bold"),
-                 bg=C['primary_dim'], fg=C['primary'], padx=8, pady=2).pack()
+        tk.Label(badge, text="v2.0", font=(FONT, 7),
+                 bg=C['card_inner'], fg=C['text_dim'], padx=8, pady=2).pack()
 
         # Right side — subtitle + live dot
         right_grp = tk.Frame(inner, bg=C['header_top'])
@@ -133,17 +137,17 @@ class CropDiseaseDetector:
         btn_row = tk.Frame(upload_card, bg=C['card'])
         btn_row.pack(fill="x", padx=20, pady=(0, 18))
 
-        self.img_btn = self._btn(btn_row, "🖼  Single Image", C['accent'], C['accent_h'], self.upload_images)
+        self.img_btn   = self._btn(btn_row, "🖼  Single Image",    '#2563a8', '#1a4f8f', self.upload_images)
         self.img_btn.pack(side="left", padx=(0, 10))
 
-        self.multi_btn = self._btn(btn_row, "🗂  Multiple Images", C['primary'], C['primary_h'], self.upload_multiple_images)
+        self.multi_btn = self._btn(btn_row, "🗂  Multiple Images",  '#6b3fa0', '#5a3488', self.upload_multiple_images)
         self.multi_btn.pack(side="left", padx=(0, 10))
 
-        self.add_btn = self._btn(btn_row, "＋ Add More", C['accent'], C['accent_h'], self.add_images)
+        self.add_btn   = self._btn(btn_row, "＋ Add More",          '#2563a8', '#1a4f8f', self.add_images)
         self.add_btn.pack(side="left", padx=(0, 10))
         self.add_btn.pack_forget()
 
-        self.csv_btn = self._btn(btn_row, "📊 Dataset (CSV)", C['warning'], C['warning_h'], self.upload_csv)
+        self.csv_btn   = self._btn(btn_row, "📊 Dataset (CSV)",     '#b45309', '#92400e', self.upload_csv)
         self.csv_btn.pack(side="left")
 
         # Image count badge
@@ -177,6 +181,10 @@ class CropDiseaseDetector:
         self.detect_btn = self._btn(ctrl_card, "EXECUTE DIAGNOSIS", C['primary'], C['primary_h'],
                                     self.detect_disease, big=True)
         self.detect_btn.pack(fill="x", padx=20, pady=(0, 20))
+        # stretch canvas width with parent
+        self.detect_btn.bind("<Configure>", lambda e, c=self.detect_btn: (
+            c.config(width=e.width) if hasattr(c, '_color') else None
+        ), add="+")
         self.detect_btn.config(state="disabled", bg=C['text_dim'])
 
         # Progress bar
@@ -251,77 +259,194 @@ class CropDiseaseDetector:
         inner.pack(fill="both", expand=True, padx=28)
 
         # Animated live dot
-        self._dot_canvas = tk.Canvas(inner, width=10, height=10,
+        self._dot_canvas = tk.Canvas(inner, width=8, height=8,
                                      bg=C['surface'], highlightthickness=0)
-        self._dot_canvas.pack(side="left", pady=11)
-        self._dot_id = self._dot_canvas.create_oval(2, 2, 9, 9, fill=C['success'], outline="")
+        self._dot_canvas.pack(side="left", pady=12)
+        self._dot_id = self._dot_canvas.create_oval(1, 1, 7, 7, fill=C['text_dim'], outline="")
         self._dot_state = True
         self._animate_dot()
 
         self.status_var = tk.StringVar(value="READY")
-        tk.Label(inner, text="STATUS", font=(FONT, 7, "bold"),
+        tk.Label(inner, text="STATUS", font=(FONT, 7),
                  bg=C['surface'], fg=C['text_dim']).pack(side="left", padx=(6, 4))
         tk.Label(inner, textvariable=self.status_var,
-                 font=(FONT, 7, "bold"), bg=C['surface'], fg=C['success']).pack(side="left")
+                 font=(FONT, 7, "bold"), bg=C['surface'], fg=C['text_muted']).pack(side="left")
 
         # Right side info
-        tk.Label(inner, text="CROPGUARD AI  •  PLANT PATHOLOGY ENGINE",
+        tk.Label(inner, text="CropGuard AI  •  Plant Pathology Engine",
                  font=(FONT, 7), bg=C['surface'], fg=C['text_dim']).pack(side="right")
 
     def _animate_dot(self):
         if not self.root.winfo_exists():
             return
         self._dot_state = not self._dot_state
-        color = C['success'] if self._dot_state else C['primary_dim']
+        color = C['text_muted'] if self._dot_state else C['border']
         self._dot_canvas.itemconfig(self._dot_id, fill=color)
-        self.root.after(900, self._animate_dot)
+        self.root.after(1200, self._animate_dot)
 
     # ─── HELPERS ──────────────────────────────────────────────────────────────
 
     def _card(self, parent, title, accent=None):
         accent = accent or C['primary']
-        frame = tk.Frame(parent, bg=C['card'],
-                         highlightthickness=1, highlightbackground=C['border'])
+        radius = 12
 
-        header = tk.Frame(frame, bg=C['card'])
+        outer = tk.Canvas(parent, bg=parent.cget('bg'), highlightthickness=0)
+        outer._radius = radius
+
+        def _draw_card(w, h, c=outer):
+            c.delete("bg")
+            r, bg, bd = c._radius, C['card'], C['border']
+            c.create_arc(1,1,2*r+1,2*r+1, start=90, extent=90, fill=bg, outline=bg, tags="bg")
+            c.create_arc(w-2*r-1,1,w-1,2*r+1, start=0, extent=90, fill=bg, outline=bg, tags="bg")
+            c.create_arc(1,h-2*r-1,2*r+1,h-1, start=180, extent=90, fill=bg, outline=bg, tags="bg")
+            c.create_arc(w-2*r-1,h-2*r-1,w-1,h-1, start=270, extent=90, fill=bg, outline=bg, tags="bg")
+            c.create_rectangle(r+1,1,w-r-1,h-1, fill=bg, outline=bg, tags="bg")
+            c.create_rectangle(1,r+1,w-1,h-r-1, fill=bg, outline=bg, tags="bg")
+            c.create_arc(1,1,2*r+1,2*r+1, start=90, extent=90, outline=bd, style="arc", tags="bg")
+            c.create_arc(w-2*r-1,1,w-1,2*r+1, start=0, extent=90, outline=bd, style="arc", tags="bg")
+            c.create_arc(1,h-2*r-1,2*r+1,h-1, start=180, extent=90, outline=bd, style="arc", tags="bg")
+            c.create_arc(w-2*r-1,h-2*r-1,w-1,h-1, start=270, extent=90, outline=bd, style="arc", tags="bg")
+            c.create_line(r+1,1,w-r-1,1, fill=bd, tags="bg")
+            c.create_line(r+1,h-1,w-r-1,h-1, fill=bd, tags="bg")
+            c.create_line(1,r+1,1,h-r-1, fill=bd, tags="bg")
+            c.create_line(w-1,r+1,w-1,h-r-1, fill=bd, tags="bg")
+            c.lower("bg")
+
+        # Inner content frame
+        inner = tk.Frame(outer, bg=C['card'], bd=0)
+        win = outer.create_window((radius, radius), window=inner, anchor="nw", tags="inner")
+
+        def _on_outer_resize(e, c=outer, f=inner):
+            _draw_card(e.width, e.height)
+            c.itemconfig("inner", width=max(1, e.width - 2*radius),
+                         height=max(1, e.height - 2*radius))
+
+        def _on_inner_resize(e, c=outer):
+            c.config(height=e.height + 2*radius)
+
+        outer.bind("<Configure>", _on_outer_resize)
+        inner.bind("<Configure>", _on_inner_resize)
+
+        # Card header inside inner frame
+        header = tk.Frame(inner, bg=C['card'])
         header.pack(fill="x", padx=18, pady=(16, 12))
 
-        # Glowing left bar
-        bar_canvas = tk.Canvas(header, width=4, height=22, bg=C['card'], highlightthickness=0)
+        bar_canvas = tk.Canvas(header, width=3, height=18, bg=C['card'], highlightthickness=0)
         bar_canvas.pack(side="left")
-        bar_canvas.create_rectangle(0, 0, 4, 22, fill=accent, outline="")
-        bar_canvas.create_rectangle(0, 0, 4, 22, fill=accent, outline="", stipple="gray50")
+        bar_canvas.create_rectangle(0, 0, 3, 18, fill=C['text_dim'], outline="")
 
-        tk.Label(header, text=title.upper(), font=(FONT, 9, "bold"),
-                 bg=C['card'], fg=C['text_muted']).pack(side="left", padx=10)
+        tk.Label(header, text=title.upper(), font=(FONT, 8, "bold"),
+                 bg=C['card'], fg=C['text_dim']).pack(side="left", padx=10)
 
-        sep = tk.Frame(frame, bg=C['border'], height=1)
+        sep = tk.Frame(inner, bg=C['border'], height=1)
         sep.pack(fill="x", padx=18, pady=(0, 16))
 
-        return frame
+        # Proxy: children added to outer are redirected to inner
+        outer._inner = inner
+        _outer_pack = outer.pack
+        def _proxy_pack(**kw):
+            _outer_pack(**kw)
+        outer.pack = _proxy_pack
+
+        # Make tk.Frame(upload_card, ...) work by overriding __getitem__ isn't possible,
+        # but callers use outer as parent — redirect via inner
+        outer._w_inner = inner  # store for reference
+        # Patch: make outer act as parent container by forwarding child creation
+        # The simplest fix: return inner but keep outer alive via inner reference
+        inner._outer = outer
+        inner._pack_outer = outer.pack
+        inner._pack_forget_outer = outer.pack_forget
+
+        def _inner_pack(**kw):
+            outer.pack(**kw)
+        def _inner_pack_forget():
+            outer.pack_forget()
+
+        inner.pack = _inner_pack
+        inner.pack_forget = _inner_pack_forget
+
+        return inner
 
     def _btn(self, parent, text, color, hover, cmd, big=False):
         size = 11 if big else 9
         pad_y = 13 if big else 8
         pad_x = 24 if big else 18
-        b = tk.Button(parent, text=text, command=cmd,
-                      font=(FONT, size, "bold"), bg=color, fg=C['white'],
-                      relief="flat", padx=pad_x, pady=pad_y, cursor="hand2",
-                      activebackground=hover, activeforeground=C['white'],
-                      disabledforeground=C['text_dim'], bd=0)
+        radius = 10
 
-        def _on_enter(e):
-            if b['state'] == 'normal':
-                b.config(bg=hover)
-                b.after(80, lambda: b.config(bg=hover) if b.winfo_exists() else None)
+        # Canvas-based rounded button
+        cv = tk.Canvas(parent, bg=parent.cget('bg'), highlightthickness=0, cursor="hand2")
+        cv._color = color
+        cv._hover = hover
+        cv._text = text
+        cv._size = size
+        cv._pad_x = pad_x
+        cv._pad_y = pad_y
+        cv._radius = radius
+        cv._state = 'normal'
+        cv._cmd = cmd
 
-        def _on_leave(e):
-            if b['state'] == 'normal':
-                b.config(bg=color)
+        def _draw(c, bg):
+            c.delete("all")
+            w, h = c.winfo_width(), c.winfo_height()
+            if w < 2 or h < 2:
+                return
+            r = c._radius
+            c.create_arc(0, 0, 2*r, 2*r, start=90, extent=90, fill=bg, outline=bg)
+            c.create_arc(w-2*r, 0, w, 2*r, start=0, extent=90, fill=bg, outline=bg)
+            c.create_arc(0, h-2*r, 2*r, h, start=180, extent=90, fill=bg, outline=bg)
+            c.create_arc(w-2*r, h-2*r, w, h, start=270, extent=90, fill=bg, outline=bg)
+            c.create_rectangle(r, 0, w-r, h, fill=bg, outline=bg)
+            c.create_rectangle(0, r, w, h-r, fill=bg, outline=bg)
+            fg = C['text_dim'] if c._state == 'disabled' else C['white']
+            c.create_text(w//2, h//2, text=c._text,
+                          font=(FONT, c._size, "bold"), fill=fg)
 
-        b.bind("<Enter>", _on_enter)
-        b.bind("<Leave>", _on_leave)
-        return b
+        def _resize(e, c=cv):
+            _draw(c, C['text_dim'] if c._state == 'disabled' else c._color)
+
+        def _on_enter(e, c=cv):
+            if c._state == 'normal':
+                _draw(c, c._hover)
+
+        def _on_leave(e, c=cv):
+            if c._state == 'normal':
+                _draw(c, c._color)
+
+        def _on_click(e, c=cv):
+            if c._state == 'normal':
+                c._cmd()
+
+        cv.bind("<Configure>", _resize)
+        cv.bind("<Enter>", _on_enter)
+        cv.bind("<Leave>", _on_leave)
+        cv.bind("<Button-1>", _on_click)
+
+        # Measure text to set canvas size
+        tmp = tk.Label(parent, text=text, font=(FONT, size, "bold"))
+        tmp.update_idletasks()
+        tw = tmp.winfo_reqwidth()
+        th = tmp.winfo_reqheight()
+        tmp.destroy()
+        cv.config(width=tw + pad_x*2, height=th + pad_y*2)
+
+        # Expose config() interface for state/bg changes
+        _orig_config = cv.config
+        def _btn_config(**kw):
+            if 'state' in kw:
+                cv._state = kw.pop('state')
+            if 'bg' in kw:
+                cv._color = kw.pop('bg')
+            if 'activebackground' in kw:
+                cv._hover = kw.pop('activebackground')
+            if 'text' in kw:
+                cv._text = kw.pop('text')
+            if kw:
+                _orig_config(**kw)
+            _draw(cv, C['text_dim'] if cv._state == 'disabled' else cv._color)
+        cv.config = _btn_config
+        cv['state'] = 'normal'  # dummy attribute for external checks
+
+        return cv
 
     def _label(self, parent, text, color, size):
         return tk.Label(parent, text=text.upper(), font=(FONT, size, "bold"),
@@ -370,10 +495,10 @@ class CropDiseaseDetector:
         self.csv_path, self.file_type = None, 'image'
         self._display_image_grid()
         self._enable_detect()
-        self.img_btn.config(text="🔄  Replace Image", bg=C['accent'])
-        self.multi_btn.config(text="🗂  Multiple Images", bg=C['primary'])
+        self.img_btn.config(text="🔄  Replace Image",    bg='#2563a8')
+        self.multi_btn.config(text="🗂  Multiple Images", bg='#6b3fa0')
         self.add_btn.pack(side="left", padx=(0, 10))
-        self.csv_btn.config(text="📊 Dataset (CSV)", bg=C['warning'])
+        self.csv_btn.config(text="📊 Dataset (CSV)",    bg='#b45309')
         self.count_label.config(text=f"{len(self.image_paths)} image loaded")
         self._reset_results()
         self._set_status(f"LOADED 1 IMAGE")
@@ -389,10 +514,10 @@ class CropDiseaseDetector:
         self.csv_path, self.file_type = None, 'image'
         self._display_image_grid()
         self._enable_detect()
-        self.multi_btn.config(text=f"🔄  Replace Batch", bg=C['primary'])
-        self.img_btn.config(text="🖼  Single Image", bg=C['accent'])
+        self.multi_btn.config(text="🔄  Replace Batch",   bg='#6b3fa0')
+        self.img_btn.config(text="🖼  Single Image",     bg='#2563a8')
         self.add_btn.pack(side="left", padx=(0, 10))
-        self.csv_btn.config(text="📊 Dataset (CSV)", bg=C['warning'])
+        self.csv_btn.config(text="📊 Dataset (CSV)",    bg='#b45309')
         self.count_label.config(text=f"{len(self.image_paths)} images loaded")
         self._reset_results()
         self._set_status(f"LOADED {len(self.image_paths)} IMAGES")
@@ -423,9 +548,9 @@ class CropDiseaseDetector:
             self.csv_path, self.image_paths, self.file_type = path, [], 'csv'
             self._display_csv(path)
             self._enable_detect()
-            self.csv_btn.config(text="DATASET ACTIVE", bg=C['success'])
-            self.img_btn.config(text="🖼  Single Image", bg=C['accent'])
-            self.multi_btn.config(text="🗂  Multiple Images", bg=C['primary'])
+            self.csv_btn.config(text="Dataset Active",    bg='#166534')
+            self.img_btn.config(text="🖼  Single Image",  bg='#2563a8')
+            self.multi_btn.config(text="🗂  Multiple Images", bg='#6b3fa0')
             self.add_btn.pack_forget()
             self.count_label.config(text="")
             self._reset_results()
@@ -444,7 +569,7 @@ class CropDiseaseDetector:
             w.destroy()
 
     def _display_image_grid(self):
-        """Render all images in a scrollable grid, each with a ✕ close button."""
+        """Render all images in a scrollable grid as clean cards."""
         self._clear_display()
         self._thumb_refs.clear()
 
@@ -456,49 +581,65 @@ class CropDiseaseDetector:
 
         inner = tk.Frame(canvas, bg=C['surface'])
         win_id = canvas.create_window((0, 0), window=inner, anchor="nw")
-
-        def _on_resize(e):
-            canvas.itemconfig(win_id, width=e.width)
-        canvas.bind("<Configure>", _on_resize)
+        canvas.bind("<Configure>", lambda e: canvas.itemconfig(win_id, width=e.width))
         inner.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
         canvas.bind_all("<MouseWheel>", lambda e, c=canvas: c.yview_scroll(-1*(e.delta//120), "units") if c.winfo_exists() else None)
 
-        COLS = 4
+        COLS = 3
+        THUMB_W, THUMB_H = 280, 200
+
         for idx, path in enumerate(self.image_paths):
             row, col = divmod(idx, COLS)
-            # Outer wrapper for relative positioning of the ✕ button
-            wrapper = tk.Frame(inner, bg=C['surface'])
-            wrapper.grid(row=row, column=col, padx=10, pady=10, sticky="nsew")
             inner.columnconfigure(col, weight=1)
 
-            cell = tk.Frame(wrapper, bg=C['card'],
+            # Card frame
+            card = tk.Frame(inner, bg=C['card'],
                             highlightthickness=1, highlightbackground=C['border'])
-            cell.pack(fill="both", expand=True, padx=0, pady=0)
+            card.grid(row=row, column=col, padx=12, pady=12, sticky="nsew")
+
+            # Image area — fixed size container so all cards are uniform
+            img_frame = tk.Frame(card, bg=C['card_inner'],
+                                 width=THUMB_W, height=THUMB_H)
+            img_frame.pack(fill="x", padx=0, pady=0)
+            img_frame.pack_propagate(False)
 
             try:
                 img = Image.open(path)
-                img.thumbnail((160, 120), Image.Resampling.LANCZOS)
-                photo = ImageTk.PhotoImage(img)
+                img_copy = img.copy()
+                img_copy.thumbnail((THUMB_W, THUMB_H), Image.Resampling.LANCZOS)
+                # Centre on the fixed frame
+                photo = ImageTk.PhotoImage(img_copy)
                 self._thumb_refs.append(photo)
-                tk.Label(cell, image=photo, bg=C['card']).pack(pady=(22, 4), padx=10)
+                lbl = tk.Label(img_frame, image=photo, bg=C['card_inner'])
+                lbl.place(relx=0.5, rely=0.5, anchor="center")
             except Exception:
-                tk.Label(cell, text="CORRUPT DATA", bg=C['card'], fg=C['danger'],
-                         font=(FONT, 8, "bold")).pack(pady=(22, 4))
+                tk.Label(img_frame, text="Unreadable", bg=C['card_inner'],
+                         fg=C['text_dim'], font=(FONT, 9)).place(relx=0.5, rely=0.5, anchor="center")
 
-            tk.Label(cell, text=os.path.basename(path), font=(FONT, 7),
-                     bg=C['card'], fg=C['text_dim'], wraplength=140).pack(pady=(0, 10))
+            # Divider
+            tk.Frame(card, bg=C['border'], height=1).pack(fill="x")
 
-            # ✕ close button — top-right overlay
+            # Footer
+            footer = tk.Frame(card, bg=C['card'], pady=10)
+            footer.pack(fill="x", padx=12)
+
+            name = os.path.basename(path)
+            tk.Label(footer, text=name, font=(FONT, 9, "bold"),
+                     bg=C['card'], fg=C['text_muted'],
+                     wraplength=THUMB_W - 70, anchor="w", justify="left").pack(side="left", fill="x", expand=True)
+
+            # × remove button — boxed red
             close_btn = tk.Button(
-                cell, text="✕", font=(FONT, 9, "bold"),
-                bg=C['danger_dim'], fg=C['danger'], relief="flat",
-                padx=5, pady=1, cursor="hand2", bd=0,
-                activebackground=C['danger'], activeforeground=C['white'],
+                footer, text="  ×  ", font=(FONT, 16, "bold"),
+                bg='#fee2e2', fg='#e53e3e', relief="flat",
+                padx=14, pady=8, cursor="hand2", bd=0,
+                highlightthickness=1, highlightbackground='#e53e3e',
+                activebackground='#e53e3e', activeforeground='#ffffff',
                 command=lambda p=path: self._remove_image(p)
             )
-            close_btn.place(relx=1.0, rely=0.0, anchor="ne", x=-6, y=6)
-            close_btn.bind("<Enter>", lambda e, b=close_btn: b.config(bg=C['danger'], fg=C['white']))
-            close_btn.bind("<Leave>", lambda e, b=close_btn: b.config(bg=C['danger_dim'], fg=C['danger']))
+            close_btn.pack(side="right", padx=(8, 0))
+            close_btn.bind("<Enter>", lambda e, b=close_btn: b.config(bg='#e53e3e', fg='#ffffff'))
+            close_btn.bind("<Leave>", lambda e, b=close_btn: b.config(bg='#fee2e2', fg='#e53e3e'))
 
     def _remove_image(self, path):
         self.image_paths.remove(path)
@@ -510,14 +651,14 @@ class CropDiseaseDetector:
                 font=(FONT, 10), bg=C['surface'], fg=C['text_dim'], justify="center")
             self.display_label.pack(expand=True)
             self.detect_btn.config(state="disabled", bg=C['text_dim'])
-            self.img_btn.config(text="🖼  Single Image", bg=C['accent'])
-            self.multi_btn.config(text="🗂  Multiple Images", bg=C['primary'])
+            self.img_btn.config(text="🖼  Single Image",     bg='#2563a8')
+            self.multi_btn.config(text="🗂  Multiple Images", bg='#6b3fa0')
             self.add_btn.pack_forget()
             self.count_label.config(text="")
             self._reset_results()
             self._set_status("READY")
         else:
-            self.img_btn.config(text="🔄  Replace Images", bg=C['accent'])
+            self.img_btn.config(text="🔄  Replace Images", bg='#2563a8')
             self._set_status(f"BUFFER: {len(self.image_paths)} IMAGE(S) REMAINING")
             self.count_label.config(text=f"{len(self.image_paths)} image(s) loaded")
             self._display_image_grid()
@@ -585,10 +726,10 @@ class CropDiseaseDetector:
         sb.pack(side="right", fill="y")
 
         disease_colors = {
-            "Healthy": C['success'],
-            "Leaf Blight": C['danger'],
-            "Powdery Mildew": C['warning'],
-            "Rust Disease": C['warning_h'],
+            "Healthy": C['ok'],
+            "Leaf Blight": C['err'],
+            "Powdery Mildew": C['warn'],
+            "Rust Disease": C['warn'],
         }
         for i, r in enumerate(results):
             row_bg = C['surface'] if i % 2 == 0 else C['bg']
@@ -598,7 +739,7 @@ class CropDiseaseDetector:
             
             idx_str = f"{i + 1:02}"
             conf_str = f"{r['confidence']}%"
-            status_icon = "✅" if r["disease"] == "Healthy" else "⚠️"
+            status_icon = "✓" if r["disease"] == "Healthy" else "!"
 
             if has_name:
                 tk.Label(row_frame, text=idx_str, font=(FONT, 9, "bold"), bg=row_bg,
@@ -683,39 +824,58 @@ class CropDiseaseDetector:
 
         COLS = 3
         disease_colors = {
-            "Healthy": C['success'], "Leaf Blight": C['danger'],
-            "Powdery Mildew": C['warning'], "Rust Disease": C['warning_h'],
+            "Healthy": C['ok'], "Leaf Blight": C['err'],
+            "Powdery Mildew": C['warn'], "Rust Disease": C['warn'],
         }
         for idx, (path, disease, conf, remedy, marked) in enumerate(results):
             row, col = divmod(idx, COLS)
             color = disease_colors.get(disease, C['text_muted'])
-            cell = tk.Frame(inner, bg=C['card'], padx=10, pady=10,
-                            highlightthickness=1, highlightbackground=color)
-            cell.grid(row=row, column=col, padx=8, pady=8, sticky="nsew")
+            icon  = "✓" if disease == "Healthy" else "!"
+
+            card = tk.Frame(inner, bg=C['card'],
+                            highlightthickness=1, highlightbackground=C['border'])
+            card.grid(row=row, column=col, padx=10, pady=10, sticky="nsew")
             inner.columnconfigure(col, weight=1)
 
             thumb = marked.copy()
-            thumb.thumbnail((140, 110), Image.Resampling.LANCZOS)
+            thumb.thumbnail((150, 115), Image.Resampling.LANCZOS)
             photo = ImageTk.PhotoImage(thumb)
             self._thumb_refs.append(photo)
-            tk.Label(cell, image=photo, bg=C['card']).pack(pady=(6, 2))
+            tk.Label(card, image=photo, bg=C['card']).pack(pady=(12, 0), padx=12)
 
-            icon = "✅" if disease == "Healthy" else "⚠️"
-            tk.Label(cell, text=f"{icon} {disease}", font=(FONT, 8, "bold"),
-                     bg=C['card'], fg=color).pack()
-            tk.Label(cell, text=f"{conf}% confidence", font=(FONT, 7),
-                     bg=C['card'], fg=C['text_muted']).pack()
-            tk.Label(cell, text=os.path.basename(path), font=(FONT, 7),
-                     bg=C['card'], fg=C['text_dim'], wraplength=130).pack(pady=(0, 4))
+            tk.Frame(card, bg=C['border'], height=1).pack(fill="x", padx=12, pady=(10, 0))
+
+            info = tk.Frame(card, bg=C['card'])
+            info.pack(fill="x", padx=12, pady=(8, 2))
+            tk.Label(info, text=f"{icon}  {disease}", font=(FONT, 9, "bold"),
+                     bg=C['card'], fg=color).pack(side="left")
+            tk.Label(info, text=f"{conf}%", font=(FONT, 9),
+                     bg=C['card'], fg=C['text_muted']).pack(side="right")
+
+            bar = tk.Canvas(card, bg=C['card'], height=4, highlightthickness=0)
+            bar.pack(fill="x", padx=12, pady=(4, 0))
+            def _draw_bar(e, c=bar, pct=conf):
+                c.delete("all")
+                c.create_rectangle(0, 0, e.width, 4, fill=C['border'], outline="")
+                c.create_rectangle(0, 0, int(e.width * pct / 100), 4, fill=C['primary'], outline="")
+            bar.bind("<Configure>", _draw_bar)
+
+            tk.Label(card, text=os.path.basename(path), font=(FONT, 7),
+                     bg=C['card'], fg=C['text_dim'], wraplength=150).pack(pady=(6, 8), padx=12)
 
             view_btn = tk.Button(
-                cell, text="📋  View Result",
-                font=(FONT, 7, "bold"), bg=C['primary'], fg=C['white'],
-                relief="flat", padx=6, pady=3, cursor="hand2",
-                activebackground=C['primary_h'], activeforeground=C['white'],
+                card, text="View Report  →",
+                font=(FONT, 8), bg=C['card'], fg=C['text_muted'],
+                relief="flat", padx=10, pady=5, cursor="hand2", bd=0,
+                activebackground=C['primary'], activeforeground=C['white'],
+                highlightthickness=1, highlightbackground=C['border'],
                 command=lambda d=disease, c=conf, r=remedy: self._display_results(d, c, r)
             )
-            view_btn.pack(pady=(0, 6))
+            view_btn.pack(fill="x", padx=12, pady=(0, 12))
+            view_btn.bind("<Enter>", lambda e, b=view_btn: b.config(
+                bg=C['primary'], fg=C['white'], highlightbackground=C['primary']))
+            view_btn.bind("<Leave>", lambda e, b=view_btn: b.config(
+                bg=C['card'], fg=C['text_muted'], highlightbackground=C['border']))
 
         # Show first result in right panel by default
         self._finish(*results[0][1:4])
@@ -746,15 +906,15 @@ class CropDiseaseDetector:
 
     def _display_results(self, disease, conf, remedy):
         if disease == "Healthy":
-            color = C['success']
-            icon = "✅"
+            color = C['ok']
+            icon = "✓"
             label = "HEALTHY"
             status_text = f"ANALYSIS REPORT: STABLE HEALTH\n" + "─" * 40 + "\n\n"
             status_text += f"Confidence Score: {conf}%\n\n"
             status_text += "MAINTENANCE RECOMMENDATIONS:\n" + remedy
         else:
-            color = C['danger'] if conf >= 80 else C['warning']
-            icon = "⚠️"
+            color = C['err'] if conf >= 80 else C['warn']
+            icon = "⚠"
             label = disease.upper()
             status_text = f"ANALYSIS REPORT: PATHOGEN DETECTED\n" + "─" * 40 + "\n\n"
             status_text += f"Identity: {disease}\n"
@@ -762,8 +922,8 @@ class CropDiseaseDetector:
             status_text += "TREATMENT PROTOCOL:\n" + remedy
 
         self.disease_label.config(text=f"{icon}  {label}", fg=color)
-        self.conf_badge.config(text=f"{conf}%", bg=C['card_inner'], fg=color)
-        self.root.after(50, lambda: self._update_conf_bar(conf, color))
+        self.conf_badge.config(text=f"{conf}%", bg=C['card_inner'], fg=C['text'])
+        self.root.after(50, lambda: self._update_conf_bar(conf, C['primary']))
         self._set_remedy(status_text)
 
     def _reset_results(self):
