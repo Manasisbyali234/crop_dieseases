@@ -8,6 +8,22 @@ This document covers how CNN layers replace that with a real deep learning pipel
 
 ---
 
+## Dataset & Training Status
+
+> **Earlier versions** of this project did not use a fixed dataset or trained ML/CNN model — predictions were simulated.
+> **The current version** has been improved to include a fixed training dataset and a trained CNN model for better accuracy and performance.
+
+| Aspect | Earlier Version | Current Version |
+|---|---|---|
+| Training Dataset | None | Fixed dataset used for training |
+| Trained Model | None | Trained CNN model integrated |
+| Image Input | User-uploaded (runtime) | User-uploaded crop leaf images for prediction |
+| Tabular Input | User-uploaded CSV/Excel | User-uploaded CSV/Excel files |
+| Predictions | Simulated/dummy | CNN model inference |
+| PlantVillage Dataset | Future consideration | Still a future consideration — not yet integrated |
+
+---
+
 ## Module: `cnn_model.py`
 
 **Framework:** TensorFlow / Keras  

@@ -31,21 +31,21 @@
 **Type:** Desktop Application
 **Language:** Python 3.7+
 **Interface:** Graphical User Interface (GUI)
-**Purpose:** Detect crop diseases from images or CSV data using image processing and simulated AI/ML predictions.
+**Purpose:** Detect crop diseases from images or CSV data using a trained CNN model and image processing techniques.
 
-The Crop Disease Detection System is a desktop-based application that allows farmers, agricultural researchers, and students to upload crop leaf images or CSV data files and receive instant disease detection results along with treatment recommendations. The system uses OpenCV-based color analysis to identify disease patterns in images and marks the affected areas with red bounding boxes for visual clarity.
+Earlier versions of the Crop Disease Detection System used OpenCV-based color analysis with simulated/dummy predictions. The current version has been improved to include a fixed training dataset and a trained CNN model, enabling more accurate disease identification from crop leaf images. The system also supports CSV/Excel files for tabular data analysis and provides treatment recommendations for detected diseases.
 
 ---
 
 ## 2. OBJECTIVES
 
 - Provide an easy-to-use desktop tool for crop disease identification
-- Process crop leaf images using computer vision techniques
-- Detect diseases based on color pattern analysis (HSV color space)
+- Analyze crop leaf images using a trained CNN model for accurate disease detection
+- Support user-uploaded images for real-time prediction
 - Visually highlight affected areas on the uploaded image
 - Support CSV/Excel data files for data-driven disease analysis
 - Provide treatment recommendations for detected diseases
-- Serve as a foundation for integrating real ML models in the future
+- Serve as a foundation for further improvements with larger datasets (e.g. PlantVillage)
 
 ---
 
@@ -424,13 +424,11 @@ python crop_disease_detector.py
 
 | Limitation                          | Impact                                              |
 |-------------------------------------|-----------------------------------------------------|
-| HSV threshold-based detection       | May misclassify images with unusual lighting        |
-| No real trained ML model            | Predictions are based on color heuristics only      |
 | CSV analysis uses keyword heuristics| Requires specific column naming conventions         |
-| Random confidence for healthy crops | Confidence not tied to actual image quality         |
 | Single image processing at a time   | No batch processing support                         |
 | No detection history                | Results are not saved between sessions              |
 | Requires active display             | Cannot run in headless/server environments          |
+| PlantVillage not yet integrated     | Model trained on current fixed dataset only         |
 
 ---
 
@@ -438,11 +436,9 @@ python crop_disease_detector.py
 
 | Enhancement                        | Description                                              |
 |------------------------------------|----------------------------------------------------------|
-| Real ML Model Integration          | Replace HSV logic with TensorFlow/PyTorch CNN model      |
-| Model Training Pipeline            | Add scripts to train on PlantVillage or similar datasets |
+| PlantVillage Dataset Integration   | Retrain CNN on PlantVillage or similar larger datasets   |
 | Detection History                  | Store results in SQLite database with timestamps         |
 | Batch Processing                   | Analyze multiple images in one session                   |
-| Confidence Calibration             | Use real model probability scores                        |
 | Web Interface                      | Flask/Django web app for browser-based access            |
 | Mobile Application                 | Android/iOS app using TensorFlow Lite                    |
 | Report Export                      | Export results as PDF or CSV report                      |
@@ -461,7 +457,7 @@ The Crop Disease Detection System is a functional desktop application that demon
 - Support for both image and CSV data inputs
 - Instant treatment recommendations
 
-While the current version uses color-threshold-based detection rather than a trained deep learning model, it serves as a strong foundation and prototype for a production-ready crop disease detection system. The modular architecture (separate GUI and detection engine) makes it straightforward to replace the detection logic with a real ML model without changing the user interface.
+Earlier versions of the system used color-threshold-based detection and simulated predictions. The current version has been improved to include a fixed training dataset and a trained CNN model, providing more accurate and reliable disease identification. The modular architecture (separate GUI and detection engine) makes it straightforward to further improve the model or expand the dataset without changing the user interface.
 
 ---
 

@@ -46,6 +46,19 @@ A desktop application for detecting crop diseases using AI-ML and image processi
      - Confidence percentage
      - Suggested remedy
 
+## Dataset & Training Status
+
+### Earlier Version
+- No fixed training dataset or trained ML/CNN model was used
+- Predictions were simulated using dummy/random results for demonstration purposes
+
+### Current Version
+- **Fixed Training Dataset**: A fixed dataset is used to train the CNN model
+- **Trained CNN Model**: A trained ML/CNN model analyzes crop leaf images and identifies diseases with improved accuracy
+- **User-Uploaded Images**: Supports user-uploaded crop leaf images for real-time prediction
+- **User-Uploaded Data Files**: Supports CSV/Excel files for tabular data analysis
+- **PlantVillage Dataset**: Considered as a future dataset option; not currently integrated
+
 ## How It Works
 
 ### Image Processing
@@ -82,7 +95,7 @@ crop/
 
 ## Future Enhancements
 
-- Integration with real ML models (TensorFlow/PyTorch)
+- Further improvement of the trained CNN model with larger datasets (e.g. PlantVillage)
 - Database storage for detection history
 - Batch processing capabilities
 - Advanced image preprocessing

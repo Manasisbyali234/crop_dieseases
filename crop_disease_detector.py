@@ -110,13 +110,21 @@ class CropDiseaseDetector:
         badge = tk.Frame(brand_row, bg=C['card_inner'],
                          highlightthickness=1, highlightbackground=C['border'])
         badge.pack(side="left", padx=(12, 0))
-        tk.Label(badge, text="v2.0", font=(FONT, 7),
+        from disease_detector import TF_AVAILABLE, MODEL_PATH
+        import os as _os
+        model_ready = TF_AVAILABLE and _os.path.exists(MODEL_PATH)
+        badge_text  = "CNN ACTIVE" if model_ready else "v2.0"
+        tk.Label(badge, text=badge_text, font=(FONT, 7),
                  bg=C['card_inner'], fg=C['text_dim'], padx=8, pady=2).pack()
 
         # Right side — subtitle + live dot
+        from disease_detector import TF_AVAILABLE, MODEL_PATH
+        import os as _os
+        model_ready  = TF_AVAILABLE and _os.path.exists(MODEL_PATH)
+        engine_label = "CNN Model Active" if model_ready else "Advanced Plant Pathology Engine"
         right_grp = tk.Frame(inner, bg=C['header_top'])
         right_grp.pack(side="right", padx=36, fill="y")
-        tk.Label(right_grp, text="Advanced Plant Pathology Engine",
+        tk.Label(right_grp, text=engine_label,
                  font=(FONT, 9), bg=C['header_top'], fg=C['text_dim']).pack(side="right", pady=(28, 0))
 
     def _build_body(self):
